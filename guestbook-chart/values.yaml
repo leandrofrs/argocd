@@ -1,4 +1,4 @@
-recordToCreate: "guestbook-chart.infralab.local"
+recordToCreate: "guestbook.infralab.local"
 
 follower:
   follower:
