@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "guestbook-chart.fullname" . }}-frontend
+  labels:
+  {{- include "guestbook-chart.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.frontend.replicas }}
+  selector:
+    matchLabels:
+      app: guestbook
+      tier: frontend
+    {{- include "guestbook-chart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: guestbook
+        tier: frontend
+      {{- include "guestbook-chart.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - env:
+        - name: GET_HOSTS_FROM
+          value: dns
+        image: {{ .Values.frontend.phpRedis.image.repository }}:{{ .Values.frontend.phpRedis.image.tag
+          | default .Chart.AppVersion }}
+        name: php-redis
+        ports:
+        - containerPort: 80
+        resources: {{- toYaml .Values.frontend.phpRedis.resources | nindent 10 }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "guestbook-chart.fullname" . }}-follower
+  labels:
+    app: redis
+    role: follower
+    tier: backend
+  {{- include "guestbook-chart.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.follower.replicas }}
+  selector:
+    matchLabels:
+      app: redis
+    {{- include "guestbook-chart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: redis
+        role: follower
+        tier: backend
+      {{- include "guestbook-chart.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - image: {{ .Values.follower.follower.image.repository }}:{{ .Values.follower.follower.image.tag
+          | default .Chart.AppVersion }}
+        name: follower
+        ports:
+        - containerPort: 6379
+        resources: {{- toYaml .Values.follower.follower.resources | nindent 10 }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "guestbook-chart.fullname" . }}-leader
+  labels:
+    app: redis
+    role: leader
+    tier: backend
+  {{- include "guestbook-chart.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.leader.replicas }}
+  selector:
+    matchLabels:
+      app: redis
+    {{- include "guestbook-chart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: redis
+        role: leader
+        tier: backend
+      {{- include "guestbook-chart.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - image: {{ .Values.leader.leader.image.repository }}:{{ .Values.leader.leader.image.tag
+          | default .Chart.AppVersion }}
+        name: leader
+        ports:
+        - containerPort: 6379
+        resources: {{- toYaml .Values.leader.leader.resources | nindent 10 }}

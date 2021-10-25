@@ -1,0 +1,44 @@
+recordToCreate: "guestbook.infralab.local"
+
+follower:
+  follower:
+    image:
+      repository: gcr.io/google_samples/gb-redis-follower
+      tag: v2
+    resources:
+      requests:
+        cpu: 120m
+        memory: 120Mi
+  ports:
+  - port: 6379
+    targetPort: 0
+  replicas: 2
+  type: ClusterIP
+frontend:
+  phpRedis:
+    image:
+      repository: gcr.io/google_samples/gb-frontend
+      tag: v5
+    resources:
+      requests:
+        cpu: 100m
+        memory: 100Mi
+  ports:
+  - port: 80
+    targetPort: 0
+  replicas: 3
+  type: LoadBalancer
+leader:
+  leader:
+    image:
+      repository: docker.io/redis
+      tag: 6.0.5
+    resources:
+      requests:
+        cpu: 100m
+        memory: 100Mi
+  ports:
+  - port: 6379
+    targetPort: 6379
+  replicas: 1
+  type: ClusterIP
