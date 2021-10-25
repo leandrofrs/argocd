@@ -7,8 +7,8 @@ follower:
       tag: v2
     resources:
       requests:
-        cpu: 110m
-        memory: 100Mi
+        cpu: 120m
+        memory: 120Mi
   ports:
   - port: 6379
     targetPort: 0
