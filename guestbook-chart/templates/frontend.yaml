@@ -4,7 +4,6 @@ metadata:
   name: {{ include "guestbook-chart.fullname" . }}-frontend
   annotations:
     external-dns.alpha.kubernetes.io/hostname: {{ .Values.recordToCreate }}
-    external-dns.alpha.kubernetes.io/provider: "aws"
     external-dns.alpha.kubernetes.io/ttl: "60"
   labels:
     app: guestbook
